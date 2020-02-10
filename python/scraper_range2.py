@@ -15,7 +15,7 @@ headers = {"User-Agent": ua1}
 def scraper_range2():
     df = pd.DataFrame(columns=['date', 'total_for_foreign',
                                'total_cash', 'grand_total', 'exchange_rate'])
-    for page in range(394, 644):
+    for page in range(394, 749):
 
         # piece together each unique URL
         whole_url = partial_url + str(page)
