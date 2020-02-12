@@ -38,7 +38,7 @@ def scraper_range2():
             print('No URL at that number')
 
         time.sleep(1.2)
-    df.to_csv('349_749.csv',index=False)
+    df.to_csv('394_749.csv',index=False)
     # return df
 
 scraper_range2()
