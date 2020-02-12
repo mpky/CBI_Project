@@ -1,3 +1,6 @@
-*.csv
 */.ipynb_checkpoints/*
 .ipynb_checkpoints
+/data/394_643.csv
+.ipynb_checkpoints/CBI_Project-checkpoint.ipynb
+.DS_Store
+notebooks/CBI_Project_Scratch.ipynb

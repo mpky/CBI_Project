@@ -38,8 +38,7 @@ def scraper_124_394():
             print('No URL at that number')
 
         time.sleep(1.2)
-    df.to_csv('124_394.csv',index=False)
-    return df
+    df.to_csv('../data/raw/124_394.csv',index=False)
 
 scraper_124_394()
 print('DONE')
