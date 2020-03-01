@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+ipynb-py-convert = "*"
+
+[packages]
+requests = "*"
+bs4 = "*"
+numpy = "*"
+pandas = "*"
+matplotlib = "*"
+ipykernel = "*"
+plotly = "*"
+chart-studio = "*"
+seaborn = "*"
+scikit-learn = "*"
+
+[requires]
+python_version = "3.7"
