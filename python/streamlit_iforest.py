@@ -23,8 +23,12 @@ st.title("Central Bank of Iraq Dollar Auction Data")
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
 # st.image(load_image("imgs/iris_setosa.jpg"), width=400)
+st.markdown("""_A short visual analysis of data scraped from the Central Bank
+of Iraq's daily dollar auction_""")
 st.subheader("Sample of Auction Results")
-st.text("This auction happened on 18 September 2018. ")
+st.markdown("""This auction happened on September 18, 2018. "Total sales for the
+purposes of fortifying foreign accounts" was 190,058,455; "total sales for cash"
+was 35,900,000.""")
 @st.cache
 def load_image(img):
     im = Image.open(os.path.join(img))
@@ -38,10 +42,13 @@ def load_data():
 data = load_data()
 
 if st.checkbox('view_data'):
-    st.subheader("Sample of the Data")
+    st.subheader("Sample of the Scraped Data")
     st.write(data[0:55])
 
 st.subheader('Total for Covering Foreign Accounts Since September 2017')
+st.markdown("""Plot of the amounts auctioned to cover foreign accounts over the
+past 2+ years. Vertical markers indicate significant announcements regarding
+the United States exiting the JCPOA agreement.""")
 @st.cache
 def plot_amounts_over_time(data):
     fig = go.Figure()
@@ -102,7 +109,7 @@ def plot_amounts_over_time(data):
     annotations=[
             dict(x=227,
                 y=200000000,
-                text='6 Aug 2018 Snapback',
+                text='6 Aug 2018 Snapback Sanctions',
                 xanchor='center',
                 font=dict(family='Arial',
                          size=14,
@@ -115,8 +122,8 @@ def plot_amounts_over_time(data):
                          size=14,
                          color='gray')),
             dict(x=291,
-                y=20000000,
-                text='4 Nov 2018 Snapback',
+                y=10000000,
+                text='4 Nov 2018 Snapback Sanctions',
                 font=dict(family='Arial',
                          size=14,
                          color='gray'),
@@ -142,22 +149,6 @@ fig = plot_amounts_over_time(data)
 st.plotly_chart(fig)
 
 
-# Scatter plot to show distribution of the two amounts
-st.subheader('Scatter Plot of Total for Foreign and Total Cash')
-
-plt.figure(figsize=(12,10))
-plt.scatter(x=data['total_for_foreign'],
-            y=data['total_cash'],
-            c='royalblue',marker='H'
-           )
-plt.xlabel('Total for Foreign',labelpad=10,fontsize=13)
-plt.ylabel('Total Cash',labelpad=10,fontsize=13)
-plt.ticklabel_format(useOffset=False, style='plain')
-
-st.pyplot()
-
-
-
 def normalize_and_model(data):
     # Normalize the data
     X = data[['total_for_foreign','total_cash']].dropna()
@@ -177,14 +168,20 @@ data_iforest = normalize_and_model(data)
 
 # Visualize distribution of anomaly scores
 st.subheader("Distribution of Anomaly Scores")
-plt.figure(figsize=(15,5))
+st.markdown("""After running the Isolation Forest algorithm on the data, below
+is the distribution of anomaly scores across the data. The lower the score, the
+more anomalous the algorithm has labeled the datapoint.
+""")
+plt.figure(figsize=(15,7))
 plt.hist(
     x=data_iforest['anomaly_scores'].dropna(),
     bins=60,
     color='royalblue'
 )
-plt.xlabel("Score",labelpad=10,fontsize=13)
-plt.ylabel("Number of Datapoints",labelpad=10,fontsize=13)
+plt.xlabel("Score",labelpad=10,fontsize=15)
+plt.xticks(fontsize=14)
+plt.ylabel("Number of Datapoints",labelpad=10,fontsize=15)
+plt.yticks(fontsize=14)
 
 st.pyplot()
 
@@ -202,7 +199,7 @@ def apply_pctile_label(data,percentile):
 
 labeled_data = apply_pctile_label(data=data_iforest,percentile=percentile)
 st.subheader("Scatter Plot with Labels Overlayed")
-st.text("User the slider above to adjust the percentile of abnormality.")
+st.markdown("User the slider above to adjust the percentile of abnormality.")
 
 
 markers = ["H",'X']
@@ -231,5 +228,8 @@ st.pyplot()
 
 # In[10]:
 
-
+st.subheader("Top 20 Most Anomalous Datapoints")
+st.markdown("""As was expected, the datapoints that the Isolation Forest algorithm
+finds most anomalous are the outlier values in _total_for_foreign_ and _total_cash_.
+""")
 st.write(data.sort_values(by='anomaly_scores').reset_index().iloc[0:20,1:-1])
