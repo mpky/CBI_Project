@@ -2,7 +2,7 @@
 
 <p align="center"> <img src="./data/figures/streamlit.gif"/> </p>
 
-Using Beautiful Soup to scrape down dollar auction data from the [Central Bank of Iraq](https://www.cbi.iq/) and then visualizing it with Plotly. Goal is to see if there have been any noticeable changes in auction amounts over the past two years.
+Using Beautiful Soup to scrape down dollar auction data from the [Central Bank of Iraq](https://www.cbi.iq/) and then visualizing it in Streamlit. Goal is to see if there have been any noticeable changes in auction amounts over the past two years.
 
 See writeup [here](https://medium.com/@mpokornyus/iranian-exploitation-of-iraqs-dollar-auction-3391af5032e0) detailing scraping and visualizations.
 
