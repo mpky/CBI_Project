@@ -1,12 +1,12 @@
-### CBI Project
+# CBI Project
 
 <p align="center"> <img src="./data/figures/streamlit.gif"/> </p>
 
-I used Beautiful Soup to scrape down dollar auction data from the [Central Bank of Iraq](https://www.cbi.iq/)'s website and then visualized it in Streamlit. The goal is to see if there have been any noticeable changes in auction amounts over the past few years.
+I used Beautiful Soup to scrape down dollar auction data from the [Central Bank of Iraq](https://www.cbi.iq/)'s website, applied the Isolation Forest algorithm, and then visualized the results in Streamlit and Plotly. The goal is to see if there have been any noticeable changes in auction amounts over the past few years.
 
 See writeup [here](https://medium.com/@mpokornyus/iranian-exploitation-of-iraqs-dollar-auction-3391af5032e0) detailing project context, scraping, and visualizations.
 
-#### Contents:
+## Contents:
 
 * data:
   * figures - screenshots of sample auction results and plotly visualizations.
@@ -21,8 +21,17 @@ See writeup [here](https://medium.com/@mpokornyus/iranian-exploitation-of-iraqs-
   * process.py - script to take the raw scraped data and output a cleaned dataframe.
   * streamlit_iforest.py - script that encompasses both the visualization and modeling from the notebooks in a Streamlit app.
 
-### Setup
+## Setup
 * Clone the repo.
 * With `pwd` being the repo, run `pipenv install Pipfile` to set up the environment
 * `pipenv shell` will activate the environment
 * To launch the streamlit app, run `streamlit run python/streamlit_iforest.py`
+
+## Changelog
+
+##### branch==branch_3
+###### Added
+- Further language to the README
+
+###### Changed
+- Plots for better layout and export.
