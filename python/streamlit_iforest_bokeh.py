@@ -9,7 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from PIL import Image
 import seaborn as sns
-sns.set_style('darkgrid')
+sns.set_style('whitegrid')
 
 from sklearn import preprocessing
 from sklearn.metrics import make_scorer, recall_score
@@ -19,7 +19,7 @@ from sklearn.ensemble import IsolationForest
 from bokeh.plotting import figure, show
 from bokeh. io import output_notebook
 from bokeh.layouts import column, row
-from bokeh.models import Span, HoverTool, Label
+from bokeh.models import Span, HoverTool, Label, ColumnDataSource
 
 st.title("Central Bank of Iraq Dollar Auction Data")
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
@@ -31,7 +31,7 @@ st.subheader("Sample of Auction Results")
 st.markdown("""This auction happened on September 18, 2018. "Total sales for the
 purposes of fortifying foreign accounts" was 190,058,455; "total sales for cash"
 was 35,900,000.""")
-@st.cache
+# @st.cache
 def load_image(img):
     im = Image.open(os.path.join(img))
     return im
@@ -40,6 +40,7 @@ st.image(load_image("./data/figures/sample_auction.png"),width=600)
 
 def load_data():
     data = pd.read_csv('./data/processed/processed.csv')
+    data['rolling_foreign'] = data.total_for_foreign.rolling(7).mean()
     return data
 data = load_data()
 
@@ -51,114 +52,125 @@ st.subheader('Total for Covering Foreign Accounts Since September 2017')
 st.markdown("""Plot of the amounts auctioned to cover foreign accounts over the
 past 2+ years. Vertical markers indicate significant announcements regarding
 the United States exiting the JCPOA agreement.""")
+
 # @st.cache
-# def plot_amounts_over_time(data):
+def plot_amounts_over_time(data):
 
-plot = figure(
-    title='Total for covering foreign accounts since September 2017',
-    x_axis_label='Date',
-    y_axis_label='Amount',
-    plot_width=700,
-    plot_height=425
-)
+    source1 = ColumnDataSource(data)
+    source2 = ColumnDataSource(data)
 
-plot.line(
-    data.index,
-    data.total_for_foreign,
-    line_width=2,
-    line_color='darkblue',
-    alpha=0.5,
-    legend_label="Total for foreign"
-)
+    plot = figure(
+        title='Total for covering foreign accounts since September 2017',
+        x_axis_label='Date',
+        y_axis_label='Amount',
+        plot_width=750,
+        plot_height=450
+    )
+    plot.yaxis.major_label_orientation = np.pi/3
 
-plot.line(
-    data.index,
-    data.grand_total.rolling(7).mean(),
-    line_width=2,
-    line_color='fuchsia',
-    alpha=0.5,
-    legend_label="Foreign 7-day rolling avg"
-)
+    plot.line(
+        source=source1,
+        x="index",
+        y="total_for_foreign",
+        line_width=2,
+        legend_label="Total for foreign",
+        hover_color='royalblue',
+        hover_alpha=.6
+    )
 
-# legend
-plot.legend.location = "top_left"
-plot.legend.click_policy="hide"
-plot.legend.background_fill_color = 'white'
+    plot.line(
+        source=source2,
+        x="index",
+        y="rolling_foreign",
+        line_width=2,
+        line_color='fuchsia',
+        alpha=0.8,
+        legend_label="Foreign 7-day rolling avg",
+        hover_color='orangered',
+        hover_alpha=.8
+    )
 
-# hover
-hover = HoverTool(tooltips=[('Amount','$y{int}')],mode='vline')
-plot.add_tools(hover)
+    # legend
+    plot.legend.location = "top_left"
+    plot.legend.click_policy="hide"
+    plot.legend.background_fill_color = 'white'
 
-# line for sanctions announcement
-sanct_announce = Span(
-    location = 164,
-    dimension='height',
-    line_color='darkgray',
-    line_dash='dashed'
-)
-plot.add_layout(sanct_announce)
+    # hover
+    hover = HoverTool(tooltips=[
+        ('total for foreign','@total_for_foreign'),
+        ('rolling foreign','@rolling_foreign{int}')
+    ])
+    plot.add_tools(hover)
 
-sanct_announce_label = Label(
-    x=164,
-    y=190000000,
-    text='8 May 2018 announcement',
-    text_color='gray',
-    border_line_color='gray',
-    text_font_size='12px',
-    text_align='right'
-)
-plot.add_layout(sanct_announce_label)
+    # line for sanctions announcement
+    sanct_announce = Span(
+        location = 164,
+        dimension='height',
+        line_color='darkred',
+        line_dash='dashed'
+    )
+    plot.add_layout(sanct_announce)
 
-# line for first snapback sanctions
-first_snapback = Span(
-    location = 227,
-    dimension='height',
-    line_color='darkgray',
-    line_dash='dashed'
-)
-plot.add_layout(first_snapback)
+    sanct_announce_label = Label(
+        x=164,
+        y=190000000,
+        text='8 May 2018 announcement',
+        text_color='darkred',
+        border_line_color='darkred',
+        text_font_size='12px',
+        text_align='right'
+    )
+    plot.add_layout(sanct_announce_label)
 
-first_snapback_label = Label(
-    x=227,
-    y=15000000,
-    text='6 Aug 2018 snapback sanctions',
-    text_color='gray',
-    border_line_color='gray',
-    text_font_size='12px',
-    text_align='left'
-)
-plot.add_layout(first_snapback_label)
+    # line for first snapback sanctions
+    first_snapback = Span(
+        location = 227,
+        dimension='height',
+        line_color='darkred',
+        line_dash='dashed'
+    )
+    plot.add_layout(first_snapback)
 
-second_snapback = Span(
-    location = 291,
-    dimension='height',
-    line_color='darkgray',
-    line_dash='dashed'
-)
-plot.add_layout(second_snapback)
+    first_snapback_label = Label(
+        x=227,
+        y=15000000,
+        text='6 Aug 2018 snapback sanctions',
+        text_color='darkred',
+        border_line_color='darkred',
+        text_font_size='12px',
+        text_align='left'
+    )
+    plot.add_layout(first_snapback_label)
 
-second_snapback_label = Label(
-    x=291,
-    y=39000000,
-    text='4 Nov 2018 snapback sanctions',
-    text_color='gray',
-    border_line_color='gray',
-    text_font_size='12px',
-    text_align='left'
-)
-plot.add_layout(second_snapback_label)
+    second_snapback = Span(
+        location = 291,
+        dimension='height',
+        line_color='darkred',
+        line_dash='dashed'
+    )
+    plot.add_layout(second_snapback)
+
+    second_snapback_label = Label(
+        x=291,
+        y=39000000,
+        text='4 Nov 2018 snapback sanctions',
+        text_color='darkred',
+        border_line_color='darkred',
+        text_font_size='12px',
+        text_align='left'
+    )
+    plot.add_layout(second_snapback_label)
 
 
-plot.xaxis.ticker = [76, 334,583]
-plot.xaxis.major_label_overrides = {76: '2018-01-01', 334: '2019-01-01',583:'2020-01-01'}
+    plot.xaxis.ticker = [76, 334,583]
+    plot.xaxis.major_label_overrides = {76: '2018-01-01', 334: '2019-01-01',583:'2020-01-01'}
 
-# turn off scientific notation for the y axis
-plot.yaxis.formatter.use_scientific = False
+    # turn off scientific notation for the y axis
+    plot.yaxis.formatter.use_scientific = False
+    return plot
 
-# layout = column([plot], sizing_mode='scale_width')
-    # return plot
 
-# plot = plot_amounts_over_time(data)
+plot = plot_amounts_over_time(data)
 st.bokeh_chart(plot)
 
 
@@ -179,28 +191,59 @@ def normalize_and_model(data):
 
 data_iforest = normalize_and_model(data)
 
-# Visualize distribution of anomaly scores
+# Visualize distribution of anomaly scores in histogram
 st.subheader("Distribution of Anomaly Scores")
 st.markdown("""After running the Isolation Forest algorithm on the data, below
 is the distribution of anomaly scores across the data. The lower the score, the
 more anomalous the algorithm has labeled the datapoint.
 """)
-plt.figure(figsize=(15,7))
-plt.hist(
-    x=data_iforest['anomaly_scores'].dropna(),
-    bins=60,
-    color='royalblue'
-)
-plt.xlabel("Score",labelpad=10,fontsize=15)
-plt.xticks(fontsize=14)
-plt.ylabel("Number of Datapoints",labelpad=10,fontsize=15)
-plt.yticks(fontsize=14)
+def plot_hist(data):
 
-st.pyplot()
+    hist, edges = np.histogram(data,bins=50)
 
-percentile = st.slider('select_percentile',0,100,10)
+    hist_df = pd.DataFrame({
+        "column": hist,
+        "left": edges[:-1],
+        "right": edges[1:]
+    })
+    hist_df["interval"] = ["%d to %d" % (left, right) for left,right in zip(hist_df["left"], hist_df["right"])]
 
-@st.cache
+    source = ColumnDataSource(hist_df)
+
+    plot = figure(
+        plot_height=400,
+        plot_width=625,
+        x_axis_label='Anomaly score',
+        y_axis_label='Count',
+    )
+    plot.quad(
+        top="column",
+        bottom=0,
+        left="left",
+        right="right",
+        source=source,
+        line_color="white",
+        fill_color="royalblue",
+        alpha=0.9,
+        hover_fill_color='fuchsia',
+        hover_fill_alpha=0.9
+    )
+
+    hover = HoverTool(tooltips=[('Count',str("@" + "column"))])
+    plot.add_tools(hover)
+
+
+
+    return plot
+
+hist = plot_hist(data_iforest['anomaly_scores'].dropna())
+st.bokeh_chart(hist)
+
+st.subheader("Scatter Plot with Labels Overlayed")
+st.markdown("Use the slider to adjust the percentile of abnormality.")
+percentile = st.slider('select_percentile',0,100,5)
+
+# @st.cache
 def apply_pctile_label(data,percentile):
 
     data['most_anomalous'] = np.where(
@@ -211,8 +254,6 @@ def apply_pctile_label(data,percentile):
     return data
 
 labeled_data = apply_pctile_label(data=data_iforest,percentile=percentile)
-st.subheader("Scatter Plot with Labels Overlayed")
-st.markdown("User the slider above to adjust the percentile of abnormality.")
 
 
 markers = ["H",'X']
