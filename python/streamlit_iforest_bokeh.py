@@ -60,40 +60,50 @@ def plot_amounts_over_time(data):
     source2 = ColumnDataSource(data)
 
     plot = figure(
-        title='Total for covering foreign accounts since September 2017',
         x_axis_label='Date',
-        y_axis_label='Amount',
+        y_axis_label='Auction Amount',
         plot_width=750,
         plot_height=450
     )
     plot.yaxis.major_label_orientation = np.pi/3
+
+    plot.circle(
+        source=source1,
+        x="index",
+        y="total_for_foreign",
+        fill_color="skyblue",
+        alpha=.7
+    )
 
     plot.line(
         source=source1,
         x="index",
         y="total_for_foreign",
         line_width=2,
+        line_color='dodgerblue',
+        alpha=.4,
         legend_label="Total for foreign",
-        hover_color='royalblue',
-        hover_alpha=.6
+        # hover_color='black',
+        # hover_alpha=.8
     )
 
     plot.line(
         source=source2,
         x="index",
         y="rolling_foreign",
-        line_width=2,
-        line_color='fuchsia',
-        alpha=0.8,
+        line_width=2.75,
+        line_color='#1E20FF',
+        alpha=0.7,
         legend_label="Foreign 7-day rolling avg",
-        hover_color='orangered',
-        hover_alpha=.8
+        hover_color='black',
+        hover_alpha=.9
     )
 
     # legend
     plot.legend.location = "top_left"
     plot.legend.click_policy="hide"
     plot.legend.background_fill_color = 'white'
+    plot.legend.label_text_font_size = '9pt'
 
     # hover
     hover = HoverTool(tooltips=[
@@ -106,7 +116,8 @@ def plot_amounts_over_time(data):
     sanct_announce = Span(
         location = 164,
         dimension='height',
-        line_color='darkred',
+        line_color='#FF1E90',
+        line_width=3,
         line_dash='dashed'
     )
     plot.add_layout(sanct_announce)
@@ -114,9 +125,9 @@ def plot_amounts_over_time(data):
     sanct_announce_label = Label(
         x=164,
         y=190000000,
-        text='8 May 2018 announcement',
-        text_color='darkred',
-        border_line_color='darkred',
+        text='8 May 2018 announcement  ',
+        text_color='red',
+        border_line_color=None,
         text_font_size='12px',
         text_align='right'
     )
@@ -126,7 +137,8 @@ def plot_amounts_over_time(data):
     first_snapback = Span(
         location = 227,
         dimension='height',
-        line_color='darkred',
+        line_color='#FF1E90',
+        line_width=3,
         line_dash='dashed'
     )
     plot.add_layout(first_snapback)
@@ -134,9 +146,9 @@ def plot_amounts_over_time(data):
     first_snapback_label = Label(
         x=227,
         y=15000000,
-        text='6 Aug 2018 snapback sanctions',
-        text_color='darkred',
-        border_line_color='darkred',
+        text='  6 Aug 2018 snapback sanctions',
+        text_color='red',
+        border_line_color=None,
         text_font_size='12px',
         text_align='left'
     )
@@ -145,7 +157,8 @@ def plot_amounts_over_time(data):
     second_snapback = Span(
         location = 291,
         dimension='height',
-        line_color='darkred',
+        line_color='#FF1E90',
+        line_width=3,
         line_dash='dashed'
     )
     plot.add_layout(second_snapback)
@@ -153,9 +166,9 @@ def plot_amounts_over_time(data):
     second_snapback_label = Label(
         x=291,
         y=39000000,
-        text='4 Nov 2018 snapback sanctions',
-        text_color='darkred',
-        border_line_color='darkred',
+        text='  4 Nov 2018 snapback sanctions',
+        text_color='red',
+        border_line_color=None,
         text_font_size='12px',
         text_align='left'
     )
@@ -222,10 +235,10 @@ def plot_hist(data):
         left="left",
         right="right",
         source=source,
-        line_color="white",
-        fill_color="royalblue",
+        line_color="black",
+        fill_color="dodgerblue",
         alpha=0.9,
-        hover_fill_color='fuchsia',
+        hover_fill_color='red',
         hover_fill_alpha=0.9
     )
 
@@ -241,7 +254,7 @@ st.bokeh_chart(hist)
 
 st.subheader("Scatter Plot with Labels Overlayed")
 st.markdown("Use the slider to adjust the percentile of abnormality.")
-percentile = st.slider('select_percentile',0,100,5)
+percentile = st.slider('Select Percentile',0,100,5)
 
 # @st.cache
 def apply_pctile_label(data,percentile):
@@ -257,8 +270,8 @@ labeled_data = apply_pctile_label(data=data_iforest,percentile=percentile)
 
 
 markers = ["H",'X']
-sizes = [30, 60]
-colors= ['royalblue','red']
+sizes = [60, 90]
+colors= ['dodgerblue','red']
 plt.figure(figsize=(14,7))
 
 for i in range(0,2):
@@ -267,14 +280,17 @@ for i in range(0,2):
         labeled_data[labeled_data.most_anomalous==i]['total_cash'],
         s=sizes[i],
         marker=markers[i],
-        c=colors[i]
+        c=colors[i],
+        alpha=0.8
     )
-plt.xlabel('Total for Foreign',labelpad=10,fontsize=13)
-plt.ylabel('Total Cash',labelpad=10,fontsize=13)
+plt.xlabel('Total for foreign',labelpad=10,fontsize=15)
+plt.ylabel('Total cash',labelpad=10,fontsize=15)
+plt.xticks(fontsize=13)
+plt.yticks(fontsize=13)
 plt.legend(
-    ('Bottom {}% Least Anomalous'.format(100-percentile),'Top {}% Most Anomalous'.format(percentile)),
+    ('Bottom {}% least anomalous'.format(100-percentile),'Top {}% most anomalous'.format(percentile)),
     loc='upper right',
-    fontsize=15
+    fontsize=16
 )
 plt.ticklabel_format(useOffset=False, style='plain')
 st.pyplot()
