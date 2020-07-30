@@ -31,7 +31,8 @@ st.subheader("Sample of Auction Results")
 st.markdown("""This auction happened on September 18, 2018. "Total sales for the
 purposes of fortifying foreign accounts" was 190,058,455; "total sales for cash"
 was 35,900,000.""")
-# @st.cache
+
+@st.cache
 def load_image(img):
     im = Image.open(os.path.join(img))
     return im
@@ -44,16 +45,16 @@ def load_data():
     return data
 data = load_data()
 
-if st.checkbox('view_data'):
+if st.checkbox('View Data'):
     st.subheader("Sample of the Scraped Data")
     st.write(data[0:55])
 
 st.subheader('Total for Covering Foreign Accounts Since September 2017')
 st.markdown("""Plot of the amounts auctioned to cover foreign accounts over the
 past 2+ years. Vertical markers indicate significant announcements regarding
-the United States exiting the JCPOA agreement.""")
+the United States exiting the JCPOA.""")
 
-# @st.cache
+@st.cache
 def plot_amounts_over_time(data):
 
     source1 = ColumnDataSource(data)
@@ -126,7 +127,7 @@ def plot_amounts_over_time(data):
         x=164,
         y=190000000,
         text='8 May 2018 announcement  ',
-        text_color='red',
+        text_color='#FF1E90',
         border_line_color=None,
         text_font_size='12px',
         text_align='right'
@@ -147,7 +148,7 @@ def plot_amounts_over_time(data):
         x=227,
         y=15000000,
         text='  6 Aug 2018 snapback sanctions',
-        text_color='red',
+        text_color='#FF1E90',
         border_line_color=None,
         text_font_size='12px',
         text_align='left'
@@ -167,7 +168,7 @@ def plot_amounts_over_time(data):
         x=291,
         y=39000000,
         text='  4 Nov 2018 snapback sanctions',
-        text_color='red',
+        text_color='#FF1E90',
         border_line_color=None,
         text_font_size='12px',
         text_align='left'
@@ -256,7 +257,7 @@ st.subheader("Scatter Plot with Labels Overlayed")
 st.markdown("Use the slider to adjust the percentile of abnormality.")
 percentile = st.slider('Select Percentile',0,100,5)
 
-# @st.cache
+@st.cache
 def apply_pctile_label(data,percentile):
 
     data['most_anomalous'] = np.where(
