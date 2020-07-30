@@ -21,6 +21,7 @@ jupyter-contrib-nbextensions = "*"
 matplotlib = "*"
 streamlit = "*"
 bleach = ">=3.1.4"
+bokeh = "*"
 
 [requires]
 python_version = "3.7"
