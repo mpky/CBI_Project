@@ -54,7 +54,7 @@ st.markdown("""Plot of the amounts auctioned to cover foreign accounts over the
 past 2+ years. Vertical markers indicate significant announcements regarding
 the United States exiting the JCPOA.""")
 
-@st.cache
+# @st.cache
 def plot_amounts_over_time(data):
 
     source1 = ColumnDataSource(data)

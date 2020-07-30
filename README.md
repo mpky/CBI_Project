@@ -1,6 +1,6 @@
 # CBI Project
 
-<p align="center"> <img src="./data/figures/streamlit.gif"/> </p>
+<p align="center"> <img src="./data/figures/cbi_20200729.gif"/> </p>
 
 I used Beautiful Soup to scrape down dollar auction data from the [Central Bank of Iraq](https://www.cbi.iq/)'s website, applied the Isolation Forest algorithm, and then visualized the results in Streamlit and Plotly. The goal is to see if there have been any noticeable changes in auction amounts over the past few years.
 
@@ -25,14 +25,15 @@ See writeup [here](https://medium.com/@mpokornyus/iranian-exploitation-of-iraqs-
 * Clone the repo.
 * With `pwd` being the repo, run `pipenv install Pipfile` to set up the environment
 * `pipenv shell` will activate the environment
-* To launch the streamlit app, run `streamlit run python/streamlit_iforest.py`
+* To launch the streamlit app, run `streamlit run python/streamlit_iforest_bokeh.py`
 
 ## Changelog
 
-##### branch==branch_4 20200726
+##### branch==branch_4 202007
 ###### Added
-- .py file for the streamlit with bokeh
+- .py file for streamlit with bokeh
 - new notebook with bokeh
+- new gif
 
 
 ##### branch==branch_3
