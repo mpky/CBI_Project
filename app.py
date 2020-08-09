@@ -188,119 +188,119 @@ plot = plot_amounts_over_time(data)
 st.bokeh_chart(plot)
 
 
-def normalize_and_model(data):
-    # Normalize the data
-    X = data[['total_for_foreign','total_cash']].dropna()
-    X_norm = preprocessing.normalize(X)
-    # Fit the model
-    clf = IsolationForest(max_samples=100,random_state=42)
-    clf.fit(X)
-
-
-    df = X.copy(deep=True)
-    df['anomaly_scores'] = clf.decision_function(X)
-    # Add anomaly scores to original dataframe
-    data.loc[data.index.isin(df.index),'anomaly_scores'] = df['anomaly_scores']
-    return data
-
-data_iforest = normalize_and_model(data)
-
-# Visualize distribution of anomaly scores in histogram
-st.subheader("Distribution of Anomaly Scores")
-st.markdown("""After running the Isolation Forest algorithm on the data, below
-is the distribution of anomaly scores across the data. The lower the score, the
-more anomalous the algorithm has labeled the datapoint.
-""")
-def plot_hist(data):
-
-    hist, edges = np.histogram(data,bins=50)
-
-    hist_df = pd.DataFrame({
-        "column": hist,
-        "left": edges[:-1],
-        "right": edges[1:]
-    })
-    hist_df["interval"] = ["%d to %d" % (left, right) for left,right in zip(hist_df["left"], hist_df["right"])]
-
-    source = ColumnDataSource(hist_df)
-
-    plot = figure(
-        plot_height=400,
-        plot_width=625,
-        x_axis_label='Anomaly score',
-        y_axis_label='Count',
-    )
-    plot.quad(
-        top="column",
-        bottom=0,
-        left="left",
-        right="right",
-        source=source,
-        line_color="black",
-        fill_color="dodgerblue",
-        alpha=0.9,
-        hover_fill_color='red',
-        hover_fill_alpha=0.9
-    )
-
-    hover = HoverTool(tooltips=[('Count',str("@" + "column"))])
-    plot.add_tools(hover)
-
-
-
-    return plot
-
-hist = plot_hist(data_iforest['anomaly_scores'].dropna())
-st.bokeh_chart(hist)
-
-st.subheader("Scatter Plot with Labels Overlayed")
-st.markdown("Use the slider to adjust the percentile of abnormality.")
-percentile = st.slider('Select Percentile',0,100,5)
-
-@st.cache
-def apply_pctile_label(data,percentile):
-
-    data['most_anomalous'] = np.where(
-        data.anomaly_scores <= data.anomaly_scores.quantile(percentile/100),
-        1,
-        0
-    )
-    return data
-
-labeled_data = apply_pctile_label(data=data_iforest,percentile=percentile)
-
-
-markers = ["H",'X']
-sizes = [60, 90]
-colors= ['dodgerblue','red']
-plt.figure(figsize=(14,7))
-
-for i in range(0,2):
-    plt.scatter(
-        labeled_data[labeled_data.most_anomalous==i]['total_for_foreign'],
-        labeled_data[labeled_data.most_anomalous==i]['total_cash'],
-        s=sizes[i],
-        marker=markers[i],
-        c=colors[i],
-        alpha=0.8
-    )
-plt.xlabel('Total for foreign',labelpad=10,fontsize=15)
-plt.ylabel('Total cash',labelpad=10,fontsize=15)
-plt.xticks(fontsize=13)
-plt.yticks(fontsize=13)
-plt.legend(
-    ('Bottom {}% least anomalous'.format(100-percentile),'Top {}% most anomalous'.format(percentile)),
-    loc='upper right',
-    fontsize=16
-)
-plt.ticklabel_format(useOffset=False, style='plain')
-st.pyplot()
-
-
-# In[10]:
-
-st.subheader("Top 20 Most Anomalous Datapoints")
-st.markdown("""As was expected, the datapoints that the Isolation Forest algorithm
-finds most anomalous are the outlier values in _total_for_foreign_ and _total_cash_.
-""")
-st.write(data.sort_values(by='anomaly_scores').reset_index().iloc[0:20,1:-1])
+# def normalize_and_model(data):
+#     # Normalize the data
+#     X = data[['total_for_foreign','total_cash']].dropna()
+#     X_norm = preprocessing.normalize(X)
+#     # Fit the model
+#     clf = IsolationForest(max_samples=100,random_state=42)
+#     clf.fit(X)
+#
+#
+#     df = X.copy(deep=True)
+#     df['anomaly_scores'] = clf.decision_function(X)
+#     # Add anomaly scores to original dataframe
+#     data.loc[data.index.isin(df.index),'anomaly_scores'] = df['anomaly_scores']
+#     return data
+#
+# data_iforest = normalize_and_model(data)
+#
+# # Visualize distribution of anomaly scores in histogram
+# st.subheader("Distribution of Anomaly Scores")
+# st.markdown("""After running the Isolation Forest algorithm on the data, below
+# is the distribution of anomaly scores across the data. The lower the score, the
+# more anomalous the algorithm has labeled the datapoint.
+# """)
+# def plot_hist(data):
+#
+#     hist, edges = np.histogram(data,bins=50)
+#
+#     hist_df = pd.DataFrame({
+#         "column": hist,
+#         "left": edges[:-1],
+#         "right": edges[1:]
+#     })
+#     hist_df["interval"] = ["%d to %d" % (left, right) for left,right in zip(hist_df["left"], hist_df["right"])]
+#
+#     source = ColumnDataSource(hist_df)
+#
+#     plot = figure(
+#         plot_height=400,
+#         plot_width=625,
+#         x_axis_label='Anomaly score',
+#         y_axis_label='Count',
+#     )
+#     plot.quad(
+#         top="column",
+#         bottom=0,
+#         left="left",
+#         right="right",
+#         source=source,
+#         line_color="black",
+#         fill_color="dodgerblue",
+#         alpha=0.9,
+#         hover_fill_color='red',
+#         hover_fill_alpha=0.9
+#     )
+#
+#     hover = HoverTool(tooltips=[('Count',str("@" + "column"))])
+#     plot.add_tools(hover)
+#
+#
+#
+#     return plot
+#
+# hist = plot_hist(data_iforest['anomaly_scores'].dropna())
+# st.bokeh_chart(hist)
+#
+# st.subheader("Scatter Plot with Labels Overlayed")
+# st.markdown("Use the slider to adjust the percentile of abnormality.")
+# percentile = st.slider('Select Percentile',0,100,5)
+#
+# @st.cache
+# def apply_pctile_label(data,percentile):
+#
+#     data['most_anomalous'] = np.where(
+#         data.anomaly_scores <= data.anomaly_scores.quantile(percentile/100),
+#         1,
+#         0
+#     )
+#     return data
+#
+# labeled_data = apply_pctile_label(data=data_iforest,percentile=percentile)
+#
+#
+# markers = ["H",'X']
+# sizes = [60, 90]
+# colors= ['dodgerblue','red']
+# plt.figure(figsize=(14,7))
+#
+# for i in range(0,2):
+#     plt.scatter(
+#         labeled_data[labeled_data.most_anomalous==i]['total_for_foreign'],
+#         labeled_data[labeled_data.most_anomalous==i]['total_cash'],
+#         s=sizes[i],
+#         marker=markers[i],
+#         c=colors[i],
+#         alpha=0.8
+#     )
+# plt.xlabel('Total for foreign',labelpad=10,fontsize=15)
+# plt.ylabel('Total cash',labelpad=10,fontsize=15)
+# plt.xticks(fontsize=13)
+# plt.yticks(fontsize=13)
+# plt.legend(
+#     ('Bottom {}% least anomalous'.format(100-percentile),'Top {}% most anomalous'.format(percentile)),
+#     loc='upper right',
+#     fontsize=16
+# )
+# plt.ticklabel_format(useOffset=False, style='plain')
+# st.pyplot()
+#
+#
+# # In[10]:
+#
+# st.subheader("Top 20 Most Anomalous Datapoints")
+# st.markdown("""As was expected, the datapoints that the Isolation Forest algorithm
+# finds most anomalous are the outlier values in _total_for_foreign_ and _total_cash_.
+# """)
+# st.write(data.sort_values(by='anomaly_scores').reset_index().iloc[0:20,1:-1])
