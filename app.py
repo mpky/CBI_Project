@@ -8,28 +8,39 @@ from PIL import Image
 import seaborn as sns
 sns.set_style('whitegrid')
 
-from sklearn import preprocessing
-from sklearn.metrics import make_scorer, recall_score
-from sklearn.model_selection import GridSearchCV
-from sklearn.ensemble import IsolationForest
-
 from bokeh.plotting import figure, show
 from bokeh. io import output_notebook
 from bokeh.layouts import column, row
 from bokeh.models import Span, HoverTool, Label, ColumnDataSource
 
-st.title("Central Bank of Iraq Dollar Auction Data")
+from sklearn import preprocessing
+from sklearn.metrics import make_scorer, recall_score
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import IsolationForest
+
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
-# st.image(load_image("imgs/iris_setosa.jpg"), width=400)
-st.markdown("""_A short visual analysis of data scraped from the Central Bank
-of Iraq's daily dollar auction_""")
-st.subheader("Sample of Auction Results")
-st.markdown("""This auction happened on September 18, 2018. "Total sales for the
-purposes of fortifying foreign accounts" was 190,058,455; "total sales for cash"
-was 35,900,000.""")
+# set page title
+# st.beta_set_page_config(
+#     page_title="CBI Auction Exploration",
+#     page_icon="💹",
+#     layout="centered"
+# )
 
-@st.cache
+'''
+# Central Bank of Iraq Dollar Auction Data
+
+_A short visual analysis of data scraped from the Central Bank
+of Iraq's daily dollar auction_
+
+### Sample of Auction Results
+
+This auction happened on September 18, 2018. "Total sales for the
+purposes of fortifying foreign accounts" was 190,058,455; "total sales for cash"
+was 35,900,000.
+'''
+
+@st.cache(show_spinner=True)
 def load_image(img):
     im = Image.open(os.path.join(img))
     return im
@@ -44,14 +55,16 @@ data = load_data()
 
 if st.checkbox('View Data'):
     st.subheader("Sample of the Scraped Data")
-    st.write(data[0:55])
+    st.dataframe(data[0:55].style.highlight_max(color='skyblue',axis=0))
 
-st.subheader('Total for Covering Foreign Accounts Since September 2017')
-st.markdown("""Plot of the amounts auctioned to cover foreign accounts over the
+'''
+### Total for Covering Foreign Accounts Since September 2017
+
+Plot of the amounts auctioned to cover foreign accounts over the
 past 2+ years. Vertical markers indicate significant announcements regarding
-the United States exiting the JCPOA.""")
+the United States exiting the JCPOA.
+'''
 
-# @st.cache
 def plot_amounts_over_time(data):
 
     source1 = ColumnDataSource(data)
@@ -91,10 +104,10 @@ def plot_amounts_over_time(data):
         y="rolling_foreign",
         line_width=2.75,
         line_color='#1E20FF',
-        alpha=0.7,
+        alpha=0.5,
         legend_label="Foreign 7-day rolling avg",
-        hover_color='black',
-        hover_alpha=.9
+        hover_color='#1E20FF',
+        hover_alpha=1
     )
 
     # legend
@@ -184,6 +197,7 @@ def plot_amounts_over_time(data):
 plot = plot_amounts_over_time(data)
 st.bokeh_chart(plot)
 
+
 def normalize_and_model(data):
     # Normalize the data
     X = data[['total_for_foreign','total_cash']].dropna()
@@ -202,11 +216,15 @@ def normalize_and_model(data):
 data_iforest = normalize_and_model(data)
 
 # Visualize distribution of anomaly scores in histogram
-st.subheader("Distribution of Anomaly Scores")
-st.markdown("""After running the Isolation Forest algorithm on the data, below
+
+'''
+### Distribution of Anomaly Scores
+
+After running the Isolation Forest algorithm on the data, below
 is the distribution of anomaly scores across the data. The lower the score, the
 more anomalous the algorithm has labeled the datapoint.
-""")
+'''
+
 def plot_hist(data):
 
     hist, edges = np.histogram(data,bins=50)
@@ -242,15 +260,17 @@ def plot_hist(data):
     hover = HoverTool(tooltips=[('Count',str("@" + "column"))])
     plot.add_tools(hover)
 
-
-
     return plot
 
 hist = plot_hist(data_iforest['anomaly_scores'].dropna())
 st.bokeh_chart(hist)
 
-st.subheader("Scatter Plot with Labels Overlayed")
-st.markdown("Use the slider to adjust the percentile of abnormality.")
+'''
+### Scatter Plot with Labels Overlayed
+
+Use the slider to adjust the percentile of abnormality.
+'''
+
 percentile = st.slider('Select Percentile',0,100,5)
 
 @st.cache
@@ -264,7 +284,6 @@ def apply_pctile_label(data,percentile):
     return data
 
 labeled_data = apply_pctile_label(data=data_iforest,percentile=percentile)
-
 
 markers = ["H",'X']
 sizes = [60, 90]
@@ -292,11 +311,11 @@ plt.legend(
 plt.ticklabel_format(useOffset=False, style='plain')
 st.pyplot()
 
+'''
+### Top 20 Most Anomalous Datapoints
 
-# In[10]:
-
-st.subheader("Top 20 Most Anomalous Datapoints")
-st.markdown("""As was expected, the datapoints that the Isolation Forest algorithm
+As was expected, the datapoints that the Isolation Forest algorithm
 finds most anomalous are the outlier values in _total_for_foreign_ and _total_cash_.
-""")
+'''
+
 st.write(data.sort_values(by='anomaly_scores').reset_index().iloc[0:20,1:-1])
