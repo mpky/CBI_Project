@@ -2,14 +2,14 @@
 
 <p align="center"> <img src="./data/figures/cbi_gif.gif"/> </p>
 
-I used Beautiful Soup to scrape down dollar auction data from the [Central Bank of Iraq](https://www.cbi.iq/)'s website, applied the Isolation Forest algorithm, and then visualized the results in Streamlit and Plotly. The goal is to see if there have been any noticeable changes in auction amounts over the past few years.
+I used Beautiful Soup to scrape down dollar auction data from the [Central Bank of Iraq](https://www.cbi.iq/)'s website, applied the Isolation Forest algorithm, and then visualized the results in Bokeh. The goal is to see if there have been any noticeable changes in auction amounts over the past few years.
 
 The static website for the project lives [here](https://iraqauction.herokuapp.com/). See writeup [here](https://medium.com/@mpokornyus/iranian-exploitation-of-iraqs-dollar-auction-3391af5032e0) detailing project context, scraping, and visualizations.
 
 ## Contents:
 
 * data:
-  * figures - screenshots of sample auction results and plotly visualizations.
+  * figures - screenshots of sample auction results and visualizations.
   * raw - raw scraped data in CSV format.
   * processed - cleaned data in CSV format.
 * python:
@@ -33,6 +33,7 @@ The static website for the project lives [here](https://iraqauction.herokuapp.co
 
 ###### Removed
 - Pipenv
+- Notebook files
 
 ##### branch==branch_4 202007
 ###### Added
