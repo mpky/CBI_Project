@@ -2,5 +2,5 @@
 */.ipynb_checkpoints/*
 data/raw/394_643.csv
 .DS_Store
-notebooks/CBI_Project_Scratch.ipynb
+notebooks/*
 cbi_env/*
